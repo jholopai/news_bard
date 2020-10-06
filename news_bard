@@ -1,0 +1,162 @@
+#!/bin/bash
+
+# graphical variables
+
+bard="                 	,
+                    A  (,
+                   / \\(,
+                 __===_,
+                 /| oo|\\
+                ´´ ===´´
+                  /i i\ "
+
+sad_bard="                 	,
+                    A  (,
+                   / \\(,
+                 __===_,
+                 /| óò|\\
+                ´´ ===´´
+                  /i i\ "
+
+border="* ============================================= *"
+
+# script
+
+clear
+echo "$bard"
+echo "$border"
+echo " "
+echo " this script requires curl to be installed to work."
+echo " "
+read -n 1 -p "       press any key to continue"
+clear
+echo "$bard"
+echo "$border"
+echo " "
+if ! [ -x "$(command -v curl)" ]; then
+	echo "  it seems you don't have curl. install curl?"
+	echo " "
+	echo " "
+	select option in yes no
+	do
+		case $option in
+			yes )
+				break
+				;;
+			no )
+				clear
+				echo "$sad_bard"
+				echo "$border"
+				echo " "
+				echo "                ok. bye :("
+				echo " "
+				exit
+				;;
+			*)
+				echo "choose 1 for yes, 2 for no."
+				;;
+		esac
+	done
+	clear
+	echo "$bard"
+	echo "$border"
+	echo " "
+	echo "            installing curl."
+	sudo apt install curl
+	read -n 1 -p "       press any key to continue"
+	clear
+	echo "$bard"
+	echo "$border"
+	echo " "
+	echo "          curl is now installed!"
+	echo " "
+	read -n 1 -p "       press any key to continue"
+	clear
+	echo "$bard"
+	echo "$border"
+	echo " "
+fi
+echo "           it seems you have curl."
+echo "           on with the script then."
+echo " "
+read -n 1 -p "       press any key to continue"
+clear
+echo "$bard"
+echo "$border"
+echo " "
+echo "     you see the local bard in the distance."
+echo "    he knows the happenings from near and far."
+echo " "
+read -n 1 -p "       press any key to continue"
+clear
+echo "$bard"
+echo "$border"
+echo " "
+echo "       ask for news about a specific topic?"
+echo "                  type 1 or 2"
+echo " "
+echo " "
+select option in yes no
+	do
+	case $option in
+		yes )
+			break
+			;;
+		no )
+			clear
+			echo "$sad_bard"
+			echo "$border"
+			echo " "
+			echo "                ok. bye :("
+			echo " "
+			exit
+			;;
+		*)
+			echo "you want to hear the news or not?"
+			;;
+	esac
+done
+clear
+echo "$bard"
+echo "$border"
+echo " "
+echo "[bard]   what doth thee wanteth to heareth?"
+echo " "
+echo "                insert a word"
+read answer2
+clear
+echo "$bard"
+echo "$border"
+echo " "
+echo "[you]    prithee bid me about $answer2."
+echo " "
+read -n 1 -p "       press any key to continue"
+clear
+echo "$bard"
+echo "$border"
+result=$(curl -s https://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_NEWS | grep -i -E "<title>.*$answer2" | head -1 | sed 's/.*<title>//' | sed 's/<\/title>.*//')
+if [ -z "$result" ]
+then
+	echo " "
+	echo "[bard]   i has't nay news about yond."
+	echo "                 farewell."
+	exit 0;
+fi
+echo " "
+echo "[bard]             aye."
+echo " "
+read -n 1 -p "       press any key to continue"
+clear
+echo "$bard"
+echo "$border"
+echo " "
+curl -sX POST -d "text=$result" https://api.funtranslations.com/translate/shakespeare.json | grep "translated" | sed 's/.* "//' | sed 's/",.*//'
+echo " "
+read -n 1 -p "       press any key to continue"
+clear
+echo "$bard"
+echo "$border"
+echo " "
+echo "            that is all. farewell."
+echo " "
+echo "                  [end]"
